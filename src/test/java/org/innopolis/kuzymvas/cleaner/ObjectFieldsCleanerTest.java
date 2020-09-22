@@ -12,12 +12,6 @@ import java.util.Collection;
 
 public class ObjectFieldsCleanerTest {
 
-    private static  class Struct {
-        private int A = 42;
-        public double B = 42.0;
-        String S = "Test";
-    }
-
     private FieldCleaner mockFieldCleaner;
     private ObjectFieldsCleaner cleaner;
     private Collection<String> goodListOf2;
@@ -30,10 +24,10 @@ public class ObjectFieldsCleanerTest {
     public void setUp() {
         mockFieldCleaner = Mockito.mock(FieldCleaner.class);
         cleaner = new ObjectFieldsCleaner(mockFieldCleaner);
-        goodListOf2 = Arrays.asList("A","S");
-        goodListOf3 = Arrays.asList("A","B","S");
-        badListMixed = Arrays.asList("A","D","S");
-        badListAll = Arrays.asList("D","E");
+        goodListOf2 = Arrays.asList("A", "S");
+        goodListOf3 = Arrays.asList("A", "B", "S");
+        badListMixed = Arrays.asList("A", "D", "S");
+        badListAll = Arrays.asList("D", "E");
         testStruct = new Struct();
     }
 
@@ -61,25 +55,31 @@ public class ObjectFieldsCleanerTest {
         try {
             cleaner.clean(testStruct, badListAll, badListAll);
             Assert.fail("Cleaner didn't throw exception, when presented with two unverifiable collections");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Mockito.verify(mockFieldCleaner, Mockito.times(0)).clean(Mockito.eq(testStruct), Mockito.any(Field.class));
             Mockito.verify(mockFieldCleaner, Mockito.times(0)).output(Mockito.eq(testStruct), Mockito.any(Field.class));
         }
         try {
             cleaner.clean(testStruct, badListMixed, goodListOf3);
-            Assert.fail("Cleaner didn't throw exception, when presented with  unverifiable collections as first collection argument");
-        } catch(IllegalArgumentException e) {
+            Assert.fail(
+                    "Cleaner didn't throw exception, when presented with  unverifiable collections as first collection argument");
+        } catch (IllegalArgumentException e) {
             Mockito.verify(mockFieldCleaner, Mockito.times(0)).clean(Mockito.eq(testStruct), Mockito.any(Field.class));
             Mockito.verify(mockFieldCleaner, Mockito.times(0)).output(Mockito.eq(testStruct), Mockito.any(Field.class));
         }
         try {
             cleaner.clean(testStruct, goodListOf2, badListMixed);
-            Assert.fail("Cleaner didn't throw exception, when presented with  unverifiable collection as second collection argument");
-        } catch(IllegalArgumentException e) {
+            Assert.fail(
+                    "Cleaner didn't throw exception, when presented with  unverifiable collection as second collection argument");
+        } catch (IllegalArgumentException e) {
             Mockito.verify(mockFieldCleaner, Mockito.times(0)).clean(Mockito.eq(testStruct), Mockito.any(Field.class));
             Mockito.verify(mockFieldCleaner, Mockito.times(0)).output(Mockito.eq(testStruct), Mockito.any(Field.class));
         }
     }
 
-
+    private static class Struct {
+        public double B = 42.0;
+        String S = "Test";
+        private final int A = 42;
+    }
 }
